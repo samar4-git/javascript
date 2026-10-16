@@ -13,29 +13,19 @@
 
         <h2>colour changer</h2>
 
-        <button class="btn btn-primary" onclick="colorBlue()">Blue</button>
-        <button class="btn btn-warning" onclick="colorYellow()">Yellow</button>
-        <button class="btn btn-success" onclick="colorGreen()">Green</button>
-        <button class="btn btn-danger" onclick="colorRed()">Red</button>
+        <button class="btn btn-primary" onclick="colorRed('blue')">Blue</button>
+        <button class="btn btn-warning" onclick="colorRed('yellow')">Yellow</button>
+        <button class="btn btn-success" onclick="colorRed('green')">Green</button>
+        <button class="btn btn-danger" onclick="colorRed('red')">Red</button>
 
     </div>
 </body>
 <script>
     function colorRed(colour) {
-        document.body.style.backgroundColor = "red";
+        document.body.style.backgroundColor = colour;
     }
 
-    function colorBlue(colour) {
-        document.body.style.backgroundColor = "blue";
-    }
-
-    function colorGreen(colour) {
-        document.body.style.backgroundColor = "green";
-    }
-
-    function colorYellow(colour) {
-        document.body.style.backgroundColor = "yellow";
-    }
+    
 </script>
 
 </html>
