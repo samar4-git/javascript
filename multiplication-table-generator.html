@@ -6,13 +6,20 @@
     <title>Document</title>
 </head>
 <body>
-    <button id="generator-id" onclick="table()">Print Table</button>
+    <button onclick="table()">Print Table</button>
+    <input type="number" id="generator-id">
+
+    <div id="print-table">
+
+    </div>
 </body>
 <script>
     function table() {
+        document.getElementById("print-table").innerHTML=""
         const number = document.getElementById("generator-id").value
-        for (let i = 1; i <= 10; i++){
-            console.log(number * i)
+        for (let i=1; i<=10; i++) {
+            const print=number * i
+            document.getElementById("print-table").innerHTML+=print+'<br/>'
         }
     }
 </script>
