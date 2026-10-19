@@ -19,11 +19,17 @@
                 <label for="Total" class="form-label mt-4">Total Marks</label>
                 <input type="number" class="form-control" name="Total" id="Total" placeholder="Enter The Total Marks">
 
-                <button class="btn btn-success mt-4">Percentage And Grade</button>
+                <button class="btn btn-success mt-4" onclick="grade()">Percentage And Grade</button>
 
-                <div>
+                <div class="resultt text-success pt-3 fw-bold">
 
                 </div>
+
+                <div id="fail" class="text-danger pt-3 fw-bold">
+
+                </div>
+
+
 
             </div>
         </div>
@@ -32,29 +38,39 @@
 <script>
     function grade() {
         const marks = document.getElementById("marks").value
-        const total = document.getElementById("total").value
+        const total = document.getElementById("Total").value
 
-        const percentage = marks / total * 100;
+        let percentage = marks / total * 100;
         let grade = ""
+        const variable = Number(percentage)
 
-        if (percentage > 90) {
+        if (variable > 90) {
             grade = "grade: A"
         }
-        else if (percentage > 80) {
+        else if (variable > 80) {
             grade = "grade: B"
         }
 
-        else if (percentage > 70) {
+        else if (variable > 70) {
             grade = "grade: C"
         }
 
-        else if (percentage > 60) {
+        else if (variable > 60) {
             grade = "grade: D"
         }
 
         else {
             grade = "grade: F (fail)"
         }
+
+        if (grade == "grade: F (fail)") {
+          document.getElementById("fail").innerHTML = grade
+        }
+
+        else {
+            document.getElementsByClassName("resultt")[0].innerHTML = grade
+        }
+
 
 
     }
