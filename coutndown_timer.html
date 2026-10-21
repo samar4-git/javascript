@@ -1,75 +1,294 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Age Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-card {
+            max-width: 600px;
+            width: 100%;
+            border: none;
+            border-radius: 16px;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #e7f1ff;
+            border-color: #0d6efd;
+        }
+
+        .correct {
+            background: #d1e7dd;
+            border-color: #198754;
+        }
+
+        .wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        #feedback {
+            min-height: 28px;
+        }
+    </style>
 </head>
-<body class="bg-light">
 
-<div class="container mt-5">
-    <div class="card shadow p-4 mx-auto" style="max-width: 450px;">
+<body>
 
-        <h2 class="text-primary text-center mb-4">
-            Age Calculator
-        </h2>
+<div class="container px-3">
+    <div class="card quiz-card shadow mx-auto">
+        <div class="card-body p-4 p-md-5">
 
-        <label class="form-label">Enter Date of Birth</label>
-        <input type="date" id="dob" class="form-control mb-3">
+            <h2 class="text-center text-primary fw-bold mb-2">
+                JavaScript Quiz
+            </h2>
 
-        <button class="btn btn-success w-100" onclick="calculateAge()">
-            Calculate Age
-        </button>
+            <p class="text-center text-muted">
+                Test your JavaScript knowledge!
+            </p>
 
-        <h5 id="result" class="text-danger text-center mt-4"></h5>
+            <div id="quiz">
+                <div class="d-flex justify-content-between mb-2">
+                    <span id="question-count">Question 1 of 5</span>
+                    <span id="score">Score: 0</span>
+                </div>
 
+                <div class="progress mb-4" style="height: 8px;">
+                    <div
+                        id="progress"
+                        class="progress-bar"
+                        style="width: 0%"
+                    ></div>
+                </div>
+
+                <h5 id="question" class="mb-4">Q give</h5>
+
+                <div id="options">
+
+                    <button >a</button>
+                    <button >a</button>
+                    <button >a</button>
+                    <button >a</button>
+                </div>
+
+                <p id="feedback" class="fw-semibold mt-3"></p>
+
+                <button
+                    id="next-btn"
+                    class="btn btn-primary w-100 mt-2"
+                    disabled
+                >
+                    Next Question
+                </button>
+            </div>
+
+            <div id="result" class="text-center d-none">
+                <h3 class="text-success">Quiz Completed!</h3>
+                <h4 id="final-score" class="my-4"></h4>
+                <p id="message"></p>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="restartQuiz()"
+                >
+                    Play Again
+                </button>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
-function calculateAge() {
-    let dobValue = document.getElementById("dob").value;
-    let result = document.getElementById("result");
+    const questions = [
+        {
+            question: "Which keyword declares a block-scoped variable?",
+            options: ["var", "let", "print", "define"],
+            answer: 1
+        },
+        {
+            question: "Which method adds an item to the end of an array?",
+            options: ["push()", "pop()", "shift()", "slice()"],
+            answer: 0
+        },
+        {
+            question: "What does typeof 10 return?",
+            options: ["integer", "float", "number", "string"],
+            answer: 2
+        },
+        {
+            question: "Which method converts JSON text into a JavaScript value?",
+            options: [
+                "JSON.stringify()",
+                "JSON.parse()",
+                "JSON.convert()",
+                "JSON.object()"
+            ],
+            answer: 1
+        },
+        {
+            question: "Which method handles a rejected Promise?",
+            options: [".then()", ".catch()", ".push()", ".join()"],
+            answer: 1
+        }
+    ];
 
-    if (dobValue === "") {
-        result.textContent = "Please select your date of birth.";
-        return;
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const countElement = document.getElementById("question-count");
+    const scoreElement = document.getElementById("score");
+    const progressElement = document.getElementById("progress");
+    const feedbackElement = document.getElementById("feedback");
+    const nextButton = document.getElementById("next-btn");
+
+    function showQuestion() {
+        answered = false;
+
+        const q = questions[currentQuestion];
+
+        countElement.textContent =
+            `Question ${currentQuestion + 1} of ${questions.length}`;
+
+        scoreElement.textContent = `Score: ${score}`;
+
+        progressElement.style.width =
+            `${(currentQuestion / questions.length) * 100}%`;
+
+        questionElement.textContent = q.question;
+        optionsElement.innerHTML = "";
+        feedbackElement.textContent = "";
+
+        nextButton.disabled = true;
+
+        q.options.forEach((option, index) => {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "option-btn";
+            button.textContent =
+                `${String.fromCharCode(65 + index)}. ${option}`;
+
+            button.addEventListener("click", () => {
+                checkAnswer(index);
+            });
+
+            optionsElement.appendChild(button);
+        });
+
+        nextButton.textContent =
+            currentQuestion === questions.length - 1
+                ? "See Result"
+                : "Next Question";
     }
 
-    let dob = new Date(dobValue + "T00:00:00");
-    let today = new Date();
+    function checkAnswer(selectedIndex) {
+        if (answered) return;
 
-    if (dob > today) {
-        result.textContent = "Date of birth cannot be in the future.";
-        return;
+        answered = true;
+
+        const correctIndex = questions[currentQuestion].answer;
+        const buttons = optionsElement.querySelectorAll("button");
+
+        buttons.forEach((button, index) => {
+            button.disabled = true;
+
+            if (index === correctIndex) {
+                button.classList.add("correct");
+            }
+
+            if (index === selectedIndex && index !== correctIndex) {
+                button.classList.add("wrong");
+            }
+        });
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            feedbackElement.textContent = "Correct answer!";
+            feedbackElement.className = "fw-semibold mt-3 text-success";
+        } else {
+            feedbackElement.textContent =
+                `Wrong answer! Correct answer: ${
+                    questions[currentQuestion].options[correctIndex]
+                }`;
+
+            feedbackElement.className = "fw-semibold mt-3 text-danger";
+        }
+
+        scoreElement.textContent = `Score: ${score}`;
+        nextButton.disabled = false;
     }
 
-    let years = today.getFullYear() - dob.getFullYear();
-    let months = today.getMonth() - dob.getMonth();
-    let days = today.getDate() - dob.getDate();
+    nextButton.addEventListener("click", () => {
+        if (!answered) return;
 
-    if (days < 0) {
-        months--;
-        let previousMonthDays = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            0
-        ).getDate();
-        days += previousMonthDays;
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    });
+
+    function showResult() {
+        document.getElementById("quiz").classList.add("d-none");
+        document.getElementById("result").classList.remove("d-none");
+
+        progressElement.style.width = "100%";
+
+        document.getElementById("final-score").textContent =
+            `Your Score: ${score} / ${questions.length}`;
+
+        const percentage = (score / questions.length) * 100;
+
+        document.getElementById("message").textContent =
+            percentage === 100
+                ? "Excellent! You got every question right!"
+                : percentage >= 60
+                ? "Good job! Keep practicing."
+                : "Keep learning and try again!";
     }
 
-    if (months < 0) {
-        years--;
-        months += 12;
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+
+        document.getElementById("result").classList.add("d-none");
+        document.getElementById("quiz").classList.remove("d-none");
+
+        showQuestion();
     }
 
-    result.textContent =
-        "Your Age: " + years + " Years, " +
-        months + " Months, " + days + " Days";
-}
+    showQuestion();
 </script>
 
 </body>
